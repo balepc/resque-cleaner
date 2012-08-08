@@ -14,6 +14,8 @@
       <th>In last 24 hours</th>
       <th>In last 3 days</th>
       <th>In last 7 days</th>
+      <th></th>
+      <th></th>
     </tr>
     <% @stats.each do |klass,count| %>
       <tr>
@@ -24,6 +26,30 @@
         <td class="number"><a href="cleaner_list?c=<%=klass%>&f=24"><%= count["1d"] %></a></td>
         <td class="number"><a href="cleaner_list?c=<%=klass%>&f=72"><%= count["3d"] %></a></td>
         <td class="number"><a href="cleaner_list?c=<%=klass%>&f=168"><%= count["7d"] %></a></td>
+        <td>
+        	<form method="post" class="form_action" action="cleaner_exec_all">
+	          <input type="hidden" name="c" value="<%= klass %>" />
+	          <input type="hidden" name="f" value="" />
+	          <input type="hidden" name="t" value="" />
+	          <input type="hidden" name="p" value="" />
+	          <input type="hidden" name="ex" value="" />
+	          <input type="hidden" name="action" value="retry_and_clear_all" />
+	          <input type="hidden" name="sha1" id="sha1_list" />
+	          <input type="submit" value="Requeue all jobs">
+          </form>
+        </td>
+        <td>
+        	<form method="post" class="form_action" action="cleaner_exec_all">
+	          <input type="hidden" name="c" value="<%= klass %>" />
+	          <input type="hidden" name="f" value="" />
+	          <input type="hidden" name="t" value="" />
+	          <input type="hidden" name="p" value="" />
+	          <input type="hidden" name="ex" value="" />
+	          <input type="hidden" name="action" value="clear_all" />
+	          <input type="hidden" name="sha1" id="sha1_list" />
+	          <input type="submit" value="Clear all jobs">
+          </form>
+        </td>
       </tr>
     <% end %>
     <tr class="total">
@@ -34,6 +60,8 @@
       <td class="number"><a href="cleaner_list?f=24"><%= @total["1d"] %></a></td>
       <td class="number"><a href="cleaner_list?f=72"><%= @total["3d"] %></a></td>
       <td class="number"><a href="cleaner_list?f=168"><%= @total["7d"] %></a></td>
+      <td></td>
+      <td></td>
     </tr>
   </table>
 
@@ -41,3 +69,15 @@
     <%= erb File.read(ResqueCleaner::Server.erb_path("_limiter.erb")) %>
   <% end %>
 </div>
+
+<script>
+  $(document).ready(function(){
+    $('.form_action').click( function() {      
+      if (!confirm('Do you really want to proceed?')) {
+        return false;
+      } else {
+      	$(this).submit();	
+      } 
+    });
+  });
+</script>

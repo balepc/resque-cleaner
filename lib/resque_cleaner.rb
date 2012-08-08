@@ -92,7 +92,9 @@ module Resque
       alias :failure_jobs :select
 
       # Clears every jobs for which block evaluates to true.
-      def clear(&block)
+      def clear(force = false, &block)
+        @limiter.maximum = self.failure.count if force
+
         cleared = 0
         @limiter.lock do
           @limiter.jobs.each_with_index do |job,i|
@@ -106,11 +108,15 @@ module Resque
             end
           end
         end
+        
+        @limiter.maximum = 1000 if force
         cleared
       end
 
       # Retries every jobs for which block evaluates to true.
-      def requeue(clear_after_requeue=false, options={}, &block)
+      def requeue(clear_after_requeue=false, options={}, force = false, &block)
+        @limiter.maximum = self.failure.count if force
+
         requeued = 0
         queue = options["queue"] || options[:queue]
         @limiter.lock do
@@ -133,9 +139,19 @@ module Resque
             end
           end
         end
+
+        @limiter.maximum = 1000 if force        
         requeued
       end
-
+      
+      def requeue_all(job)
+        requeue(true, {}, true){|j| j.klass?(job)}                            
+      end
+      
+      def clear_all(job)
+        clear(true){|j| j.klass?(job)}          
+      end
+      
       # Clears all jobs except the last X jobs
       def clear_stale
         return 0 unless @limiter.on?

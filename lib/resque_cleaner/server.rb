@@ -169,7 +169,27 @@ module ResqueCleaner
           @url = "cleaner_list?c=#{@klass}&ex=#{@exception}&f=#{@from}&t=#{@to}"
           erb File.read(ResqueCleaner::Server.erb_path('cleaner_exec.erb'))
         end
+        
+        post "/cleaner_exec_all" do
+          load_library
+          load_cleaner_filter
 
+          if params[:select_all_pages]!="1"
+            @sha1 = {}
+            params[:sha1].split(",").each {|s| @sha1[s] = true }
+          end
+
+          block = filter_block
+
+          @count =
+            case params[:action]
+              when "retry_and_clear_all" then cleaner.requeue_all(params[:c])
+              when "clear_all" then cleaner.clear_all(params[:c])            
+            end
+                    
+          erb File.read(ResqueCleaner::Server.erb_path('cleaner_exec_all.erb'))
+        end
+        
         get "/cleaner_dump" do
           load_library
           load_cleaner_filter
