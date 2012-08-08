@@ -1,11 +1,11 @@
 Gem::Specification.new do |s|
-  s.name              = "resque-cleaner"
+  s.name              = "askfm-resque-cleaner"
   s.version           = "0.2.9.1"
   s.date              = Time.now.strftime('%Y-%m-%d')
   s.summary           = "Resque plugin cleaning up failed jobs."
-  s.homepage          = "http://github.com/ono/resque-cleaner"
-  s.email             = "ononoma@gmail.com"
-  s.authors           = [ "Tatsuya Ono" ]
+  s.homepage          = "http://github.com/FylmTM/resque-cleaner"
+  s.email             = "d.vrublevskis@gmail.com"
+  s.authors           = [ "Tatsuya Ono", "Dmitrijs Vrublevskis" ]
 
   s.files             = %w( README.markdown CHANGELOG.md Rakefile LICENSE )
   s.files            += Dir.glob("lib/**/*")
